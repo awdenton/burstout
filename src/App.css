@@ -1,38 +1,75 @@
 .App {
   text-align: center;
+  height: 100vmax;
+  background-color: #006400;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.game-card {
+  border: 2px solid black;
+  display: inline-block;
+  margin: 10px;
+  width: 150px;
+  height: 108px;
+  transition-property: transform;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.game-card-front {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  transform: rotate3d(0, 1, 0, 180deg);
+  background-color: #eeeeee;
 }
 
-.App-link {
-  color: #61dafb;
+.game-card-back {
+  background-image: url(./utils/CardBack.jpg);
+  background-size: cover;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.game-card-front, .game-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.flipped {
+  transform: rotate3d(0, 1, 0, 180deg);
+}
+
+.header {
+  text-align: center;
+  width: 66%;
+  margin: auto;
+  color: #FF3C19;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.card-row{
+  display: flex;
+  margin: 15px;
+  justify-content: center;
+}
+
+.missed-guesses {
+  width: 66%;
+  margin: auto;
+  column-count: 4;
+}
+
+.miss {
+  text-align: center;  
+  margin: 0;
+  padding: 0;
+  font-size: 1.4em;
+  font-weight: bold;
+  color:#FF3C19
+}
+
+#start-button{
+  font-size: .7em;
 }
