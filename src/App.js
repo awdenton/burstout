@@ -1,103 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
-import Countdown from 'react-countdown';
 import './App.css';
-import { Board, Misses, Timer } from './components';
+import { AnswerCard } from './components';
 import { categories } from './utils';
 
 export default function App() {
   const [guess, setGuess] = useState("");
-  const [theme, setTheme] = useState("Start a New Game");
-  const [answers, setAnswers] = useState({});
-  const [misses, setMisses] = useState([]);
-  const [bonus, setBonus] = useState(0);
-  const [score, setScore] = useState(0);
-  const [canGuess, setCanGuess] = useState(false);
-  const [timerStart, setTimerStart] = useState(Date.now())
+  const [exCard, setExCard] = useState({ title: _.sample(categories[4].answers), flipped: false });
+  const [cards, setCards] = useState([]);
 
-  const newGame = () => {
-    let randCat = _.sample(categories);
+  const dealCards = () => {
+    if (cards[0]) {
+      flipCards(false);
+    }
 
-    let newAnswers = _.chain(randCat.answers)
+    let category = _.sample(categories);
+
+    let newCards = _.chain(category.answers)
       .shuffle()
       .slice(0, 12)
+      .map(answer => {
+        return { title: answer, flipped: false }
+      })
       .value();
 
-    let answersData = _.map(newAnswers, ans => {
-      return { title: ans, found: false };
-    })
-
-    setTheme(randCat.theme);
-    setAnswers(answersData);
-    setMisses([]);
-    setBonus(randCat.bonus);
-    setScore(0);
-    setCanGuess(true);
-    setGuess("");
-    setTimerStart(Date.now() + 120000);
+    setCards(newCards);
   }
 
-  const handleGuess = e => {
+  const flipCards = showFace => {
+    let tempCards = _.clone(cards);
+    _.forEach(tempCards, card => {
+      card.flipped = showFace;
+    })
+    setCards(tempCards);
+  }
+
+  const flipDone = () => {
+    let category = _.sample(categories);
+
+    let newCards = _.chain(category.answers)
+      .shuffle()
+      .slice(0, 12)
+      .map(answer => {
+        return { title: answer, flipped: false }
+      })
+      .value();
+
+    setCards(newCards);
+  }
+
+  const typingGuess = e => {
     setGuess(e.target.value);
   }
 
-  const submitGuess = (e) => {
+  const submitGuess = e => {
     e.preventDefault();
 
-    let match = false;
-    let tempAns = answers.slice();
+    let foundMatch = false;
+    let tempCards = _.clone(cards);
 
     for (let i = 0; i < 10; i++) {
-      if (tempAns[i].title.toLowerCase() === guess.toLowerCase()) {
-        match = true;
-        tempAns[i].found = true;
-        (i === bonus) ? setScore(score + 3) : setScore(score + 1)
+      if (tempCards[i].title.toLowerCase() === guess.toLowerCase()) {
+        foundMatch = true;
+        tempCards[i].flipped = true;
       }
     }
 
-    if (!match) {
-      let missedCopy = misses.slice();
-      missedCopy.push(guess);
-      setMisses(missedCopy);
-    }
-
     setGuess("");
-    setAnswers(tempAns);
-  }
-
-  const timeOut = () => {
-    setTheme("TIMES UP! TRY AGAIN!");
-    setCanGuess(false);
-
-    let tempAns = answers.slice();
-    _.forEach(tempAns, ans => {
-      ans.found = true;
-    })
-
-    setAnswers(tempAns);
+    setCards(tempCards);
   }
 
   return (
     <div className="App">
 
-      <div className="header">
-        <h1 id="title">BURSTOUT</h1>
-        <button id="start-button" onClick={newGame}>New Game</button>
-        <h3 id="theme-banner">{theme}</h3>
-        <Timer date={timerStart} timeOut={timeOut} />
+      <div className="buttons">
+        <button onClick={dealCards}>Deal Cards</button>
+        <button onClick={flipCards}>Flip Cards</button>
+      </div>
 
-        <form id="guess-box" onSubmit={submitGuess}>
-          <input placeholder="Guess!" value={guess} onChange={handleGuess} disabled={!canGuess} />
-          <input type="submit" value="Guess" />
+      <div>
+        <h1>{</h1>
+      </div>
+
+      <div>
+        <form onSubmit={submitGuess}>
+          <input type="text" value={guess} onChange={typingGuess}/>
+          <input type="submit" onClick={submitGuess} />
         </form>
-
-        <div>{`Score: ${score}`}</div>
       </div>
 
 
-      <Board answers={answers} />
-
-      <Misses misses={misses} />
+      <div>
+        {_.map(cards, (card, index) => {
+          return (
+            <AnswerCard cardInfo={card} restFunc={flipDone} key={index} />
+          );
+        })}
+        {/* <AnswerCard cardInfo={exCard} restFunc={flipDone} /> */}
+      </div>
 
     </div>
   );

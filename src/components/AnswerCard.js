@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {AnimateOnChange, animations } from 'react-animation';
+import { useSpring, animated } from 'react-spring';
 
 export default function AnswerCard(props) {
-    const [isFlipped, setIsFlipped] = useState(props.answer.found);
 
-    useEffect(() => {
-        setIsFlipped(props.answer.found);
-    }, [props.answer.found]);
+    const flipAnimation = useSpring({
+        transform: `rotate3d(0, 1, 0, ${props.cardInfo.flipped ? 180 : 0}deg)`,
+        config: { mass: 1, tension: 100, friction: 26 },
+        onRest: props.restFunc
+      })
 
     return (
-        <div className={`game-card ${isFlipped ? "flipped" : ""}`}>
-            <div className={`game-card-front`}>{props.answer.title}</div>
+        <animated.div className={`game-card`} style={flipAnimation}>
+            <div className={`game-card-front`}>{props.cardInfo.title}</div>
             <div className={`game-card-back`}></div>
-        </div>
+        </animated.div>
     );
 }

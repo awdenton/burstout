@@ -4,14 +4,16 @@
   background-color: #006400;
 }
 
+.buttons {
+  margin-bottom: 15px;
+}
+
 .game-card {
   border: 2px solid black;
   display: inline-block;
   margin: 10px;
   width: 150px;
   height: 108px;
-  transition-property: transform;
-  transition: transform 0.5s;
   transform-style: preserve-3d;
 }
 
@@ -19,7 +21,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transform: rotate3d(0, 1, 0, 180deg);
+  transform: rotateY(180deg);
   background-color: #eeeeee;
 }
 
@@ -34,42 +36,4 @@
   height: 100%;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-}
-
-.flipped {
-  transform: rotate3d(0, 1, 0, 180deg);
-}
-
-.header {
-  text-align: center;
-  width: 66%;
-  margin: auto;
-  color: #FF3C19;
-  font-size: 1.4em;
-  font-weight: bold;
-}
-
-.card-row{
-  display: flex;
-  margin: 15px;
-  justify-content: center;
-}
-
-.missed-guesses {
-  width: 66%;
-  margin: auto;
-  column-count: 4;
-}
-
-.miss {
-  text-align: center;  
-  margin: 0;
-  padding: 0;
-  font-size: 1.4em;
-  font-weight: bold;
-  color:#FF3C19
-}
-
-#start-button{
-  font-size: .7em;
 }
