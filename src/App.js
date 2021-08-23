@@ -1,53 +1,53 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import './App.css';
-import { AnswerCard } from './components';
+import { Board } from './components';
 import { categories } from './utils';
 
 export default function App() {
+  const [activeGame, setActiveGame] = useState(false);
   const [guess, setGuess] = useState("");
-  const [exCard, setExCard] = useState({ title: _.sample(categories[4].answers), flipped: false });
+  const [roundTheme, setRoundTheme] = useState("");
   const [cards, setCards] = useState([]);
 
-  const dealCards = () => {
-    if (cards[0]) {
-      flipCards(false);
+  const toggleGame = () => {
+    let tempBool = !activeGame;
+    setActiveGame(tempBool);
+
+    if (tempBool) {
+      dealGame();
+    } else {
+      setRoundTheme("");
+      setCards([]);
     }
+  }
 
-    let category = _.sample(categories);
+  const dealGame = () => {
+    let newCat = _.sample(categories);
 
-    let newCards = _.chain(category.answers)
+    setCards(_.chain(newCat.answers)
       .shuffle()
       .slice(0, 12)
-      .map(answer => {
-        return { title: answer, flipped: false }
-      })
-      .value();
+      .map(entry => { return { answer: entry, flipped: false } })
+      .value()
+    );
 
-    setCards(newCards);
+    setRoundTheme(newCat.theme);
   }
 
-  const flipCards = showFace => {
-    let tempCards = _.clone(cards);
-    _.forEach(tempCards, card => {
-      card.flipped = showFace;
-    })
-    setCards(tempCards);
-  }
+  // const flipDone = () => {
+  //   let category = _.sample(categories);
 
-  const flipDone = () => {
-    let category = _.sample(categories);
+  //   let newCards = _.chain(category.answers)
+  //     .shuffle()
+  //     .slice(0, 12)
+  //     .map(answer => {
+  //       return { title: answer, flipped: false }
+  //     })
+  //     .value();
 
-    let newCards = _.chain(category.answers)
-      .shuffle()
-      .slice(0, 12)
-      .map(answer => {
-        return { title: answer, flipped: false }
-      })
-      .value();
-
-    setCards(newCards);
-  }
+  //   setCards(newCards);
+  // }
 
   const typingGuess = e => {
     setGuess(e.target.value);
@@ -59,44 +59,40 @@ export default function App() {
     let foundMatch = false;
     let tempCards = _.clone(cards);
 
-    for (let i = 0; i < 10; i++) {
-      if (tempCards[i].title.toLowerCase() === guess.toLowerCase()) {
+    for (let i = 0; i < tempCards.length; i++) {
+      if (tempCards[i].answer.toLowerCase() === guess.toLowerCase()) {
         foundMatch = true;
         tempCards[i].flipped = true;
       }
     }
 
+    if (foundMatch) {
+      setCards(tempCards);
+    }
+
     setGuess("");
-    setCards(tempCards);
   }
 
   return (
     <div className="App">
 
       <div className="buttons">
-        <button onClick={dealCards}>Deal Cards</button>
-        <button onClick={flipCards}>Flip Cards</button>
-      </div>
-
-      <div>
-        <h1>{</h1>
+        <button onClick={toggleGame}>Toggle Game</button>
       </div>
 
       <div>
         <form onSubmit={submitGuess}>
-          <input type="text" value={guess} onChange={typingGuess}/>
+          <input type="text" value={guess} onChange={typingGuess} />
           <input type="submit" onClick={submitGuess} />
         </form>
       </div>
 
+      <div>
+        <h1>{roundTheme}</h1>
+      </div>
 
       <div>
-        {_.map(cards, (card, index) => {
-          return (
-            <AnswerCard cardInfo={card} restFunc={flipDone} key={index} />
-          );
-        })}
-        {/* <AnswerCard cardInfo={exCard} restFunc={flipDone} /> */}
+        {activeGame ? <Board roundData={cards} /> : "No game"}
       </div>
 
     </div>
