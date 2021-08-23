@@ -2,6 +2,7 @@
   text-align: center;
   height: 100vmax;
   background-color: #006400;
+  padding: 15px;
 }
 
 .buttons {
@@ -38,6 +39,8 @@
   backface-visibility: hidden;
 }
 
-.fade-box {
-  display: inline-block;
+.board-frame {
+  width: 900px;
+  height: 400px;
+  margin: auto;
 }

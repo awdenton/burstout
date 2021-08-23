@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import { useTransition, animated } from 'react-spring';
 import './App.css';
 import { Board } from './components';
-import { categories } from './utils';
+import { categories, gameConstants } from './utils';
 
 export default function App() {
+
   const [activeGame, setActiveGame] = useState(false);
   const [guess, setGuess] = useState("");
-  const [roundTheme, setRoundTheme] = useState("");
+  const [roundTheme, setRoundTheme] = useState("Burst Out");
   const [cards, setCards] = useState([]);
+
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    if(activeGame) {
+      if(timer > 0) {
+        setTimeout(() => setTimer(timer-1), 1000)
+      }
+    }
+  })
+
+  const boardTransition = useTransition(activeGame, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 }
+  });
 
   const toggleGame = () => {
     let tempBool = !activeGame;
@@ -17,8 +35,7 @@ export default function App() {
     if (tempBool) {
       dealGame();
     } else {
-      setRoundTheme("");
-      setCards([]);
+      setRoundTheme("Burst Out");
     }
   }
 
@@ -27,27 +44,14 @@ export default function App() {
 
     setCards(_.chain(newCat.answers)
       .shuffle()
-      .slice(0, 12)
+      .slice(0, gameConstants.numberOfCards)
       .map(entry => { return { answer: entry, flipped: false } })
       .value()
     );
 
     setRoundTheme(newCat.theme);
+    setTimer(gameConstants.gameLength)
   }
-
-  // const flipDone = () => {
-  //   let category = _.sample(categories);
-
-  //   let newCards = _.chain(category.answers)
-  //     .shuffle()
-  //     .slice(0, 12)
-  //     .map(answer => {
-  //       return { title: answer, flipped: false }
-  //     })
-  //     .value();
-
-  //   setCards(newCards);
-  // }
 
   const typingGuess = e => {
     setGuess(e.target.value);
@@ -82,7 +86,7 @@ export default function App() {
 
       <div>
         <form onSubmit={submitGuess}>
-          <input type="text" value={guess} onChange={typingGuess} />
+          <input type="text" value={guess} onChange={typingGuess} disabled={!activeGame}/>
           <input type="submit" onClick={submitGuess} />
         </form>
       </div>
@@ -91,8 +95,10 @@ export default function App() {
         <h1>{roundTheme}</h1>
       </div>
 
-      <div>
-        {activeGame ? <Board roundData={cards} /> : "No game"}
+      <div className="board-frame">
+        {boardTransition((style, item) => {
+          return item ? <animated.div style={style}><Board roundData={cards} timer={timer}/></animated.div> : ""
+        })}
       </div>
 
     </div>
