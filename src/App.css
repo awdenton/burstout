@@ -1,12 +1,25 @@
-.App {
-  text-align: center;
-  height: 100vmax;
-  background-color: #006400;
-  padding: 15px;
+body {
+  text-align: center !important;  
+  background-color: #006400 !important;
 }
 
-.buttons {
-  margin-bottom: 15px;
+input {
+  border-radius: 5px;
+  font-size: 1.3em;
+  text-align: center;
+}
+
+input:focus {
+  outline: none;
+}
+
+.game-toggle {
+  margin: 15px;
+  padding: 5px;
+  width: 12%;
+  min-width: 100px;
+  border-radius: 5px;
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
 .game-card {
@@ -40,8 +53,7 @@
 }
 
 .board-frame {
-  width: 900px;
-  height: 400px;
+  width: 66%;
   margin: auto;
 }
 

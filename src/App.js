@@ -25,6 +25,7 @@ export default function App() {
       } else {
         flipCards();
         setTimerActive(false);
+        setGuess("");
         setGameToggleLabel("Random Category");
       }
     }
@@ -49,13 +50,14 @@ export default function App() {
       setGameToggleLabel("Start");
     } else if (gameBool && timerBool) {
       flipCards();
+      setGuess("");
       setTimerActive(!timerBool);
       setGameToggleLabel("Random Category");
     }
   }
 
   const dealGame = () => {
-    let newCat = _.sample(categories);  
+    let newCat = _.sample(categories);
 
     setCards(_.chain(newCat.answers)
       .shuffle()
@@ -111,20 +113,15 @@ export default function App() {
   return (
     <div className="App">
 
-      <div className="buttons">
-        <button onClick={toggleGame}>{gameToggleLabel}</button>
-      </div>
+      <button onClick={toggleGame} className="game-toggle">{gameToggleLabel}</button>
 
-      <div>
-        <form onSubmit={submitGuess}>
-          <input type="text" value={guess} onChange={typingGuess} disabled={!timerActive} />
-          <input type="submit" onClick={submitGuess} />
-        </form>
-      </div>
+      <form onSubmit={submitGuess}>
+        <input type="text" value={guess} onChange={typingGuess} disabled={!timerActive} />
+      </form>
 
       <div className="board-frame">
         {boardTransition((style, item) => {
-          return item ? <animated.div style={style}><Board roundData={cards} roundTheme={roundTheme} timer={timer} timerActive={timerActive} misses={misses}/></animated.div> : ""
+          return item ? <animated.div style={style}><Board roundData={cards} roundTheme={roundTheme} timer={timer} timerActive={timerActive} misses={misses} /></animated.div> : ""
         })}
       </div>
 

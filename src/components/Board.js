@@ -18,7 +18,7 @@ export default function Board(props) {
             <h1>{props.roundTheme}</h1>
             <div className="card-row">
                 {_.chain(props.roundData)
-                    .slice(0, 5)
+                    .slice(0, (gameConstants.numberOfCards/3))
                     .map((answer, index) => {
                         return (
                             <AnswerCard cardInfo={answer} key={"row1" + index} />
