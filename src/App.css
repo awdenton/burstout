@@ -44,3 +44,9 @@
   height: 400px;
   margin: auto;
 }
+
+.missed-word {
+  margin: 10px;
+  color: red;
+  font-size: 1.3em;
+}
