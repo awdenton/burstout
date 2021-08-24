@@ -85,6 +85,35 @@ const categories = [
             "Zebra",
             "Donkey",
         ]
+    },
+    {
+        theme: "Home Game Consoles",
+        answers: [
+            "Playstation",
+            "Playstation 2",
+            "Playstation 3",
+            "Playstation 4",
+            "Playstation 5",
+            "Nintendo",
+            "Super Nintendo",
+            "Nintendo 64",
+            "GameCube",
+            "Wii",
+            "Wii U",
+            "Switch",
+            "Master System",
+            "Genesis",
+            "Saturn",
+            "Dreamcast",
+            "X-Box",
+            "X-Box 360",
+            "X-Box One",
+            "X-Box Series X",
+            "Atari 2600",
+            "Jaguar",
+            "Phillips CD-i",
+            "ColecoVision",
+        ]
     }
 ]
 

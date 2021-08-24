@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
 import { useTransition, animated } from 'react-spring';
+import _ from 'lodash';
 import './App.css';
-import { Board } from './components';
+import { Board, AnswerCard } from './components';
 import { categories, gameConstants } from './utils';
 
 export default function App() {
@@ -31,10 +31,14 @@ export default function App() {
     }
   });
 
-  const boardTransition = useTransition(activeGame, {
+  const cardTransition = useTransition(cards, {
     from: { opacity: 0, scale: 0 },
-    enter: { opacity: 1, scale: 1 },
-    leave: { opacity: 0, scale: 0 }
+    enter: item => async (next) => {
+      await next({opacity: 1, scale: 1, delay: item.delay })
+    },
+    leave: { opacity: 0, scale: 0 },
+    config: {mass: 5, tension: 400, friction: 75},
+    onRest: () => console.log('rested')
   });
 
   const toggleGame = () => {
@@ -45,14 +49,15 @@ export default function App() {
       setActiveGame(!gameBool)
       dealGame();
       setGameToggleLabel("End Game");
-    } else if (gameBool && !timerBool) {
-      setActiveGame(!gameBool);
-      setGameToggleLabel("Start");
     } else if (gameBool && timerBool) {
       flipCards();
       setGuess("");
       setTimerActive(!timerBool);
       setGameToggleLabel("Random Category");
+    } else if (gameBool && !timerBool) {
+      setCards([]);
+      setActiveGame(!gameBool);
+      setGameToggleLabel("Start");
     }
   }
 
@@ -62,7 +67,7 @@ export default function App() {
     setCards(_.chain(newCat.answers)
       .shuffle()
       .slice(0, gameConstants.numberOfCards)
-      .map(entry => { return { answer: entry, flipped: false } })
+      .map((entry, index) => { return { answer: entry, flipped: false, delay:(index*100)} })
       .value()
     );
 
@@ -120,9 +125,25 @@ export default function App() {
       </form>
 
       <div className="board-frame">
-        {boardTransition((style, item) => {
-          return item ? <animated.div style={style}><Board roundData={cards} roundTheme={roundTheme} timer={timer} timerActive={timerActive} misses={misses} /></animated.div> : ""
-        })}
+
+        <h1>{roundTheme}</h1>
+
+        <div className="cards-frame">
+          {cardTransition((style, item) => {
+            return item ? <animated.div className="card-anim" style={style}><AnswerCard cardInfo={item} /></animated.div> : ""
+          })}
+        </div>
+
+        {timerActive ? <h3>{timer} Seconds Remaining!</h3> : <h3>Time's up!</h3>}
+
+        <div>
+          {_.map(misses, (miss, index) => {
+            return (
+              <span className="missed-word" key={index}>{miss}</span>
+            );
+          })}
+        </div>
+
       </div>
 
     </div>
