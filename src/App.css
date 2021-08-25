@@ -1,10 +1,13 @@
 body {
   text-align: center !important;  
   background-color: #006400 !important;
+  
 }
 
 input {
   border-radius: 5px;
+  width: 25%;
+  min-width: 150px;
   font-size: 1.3em;
   text-align: center;
 }
@@ -68,4 +71,18 @@ input:focus {
   color: red;
   font-size: 1.3em;
   text-transform: uppercase;
+}
+
+.title {
+  font-size: 4em;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #D6B71A;
+  text-shadow: 2px 2px #2144BF;
+}
+
+.banner {
+  margin-top: 15px;
+  height: 1.5em;
+  color: #D6B71A;
 }

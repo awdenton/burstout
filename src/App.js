@@ -6,14 +6,16 @@ import { Board, AnswerCard } from './components';
 import { categories, gameConstants } from './utils';
 
 export default function App() {
+  let restResponse = 0;
 
-  const [activeGame, setActiveGame] = useState(false);
+  const [gameActive, setGameActive] = useState(false);
   const [guess, setGuess] = useState("");
   const [roundTheme, setRoundTheme] = useState("Burst Out");
   const [cards, setCards] = useState([]);
   const [misses, setMisses] = useState([]);
 
   const [gameToggleLabel, setGameToggleLabel] = useState("Start");
+  const [gameToggleActive, setGameToggleActive] = useState(true);
 
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
@@ -31,33 +33,46 @@ export default function App() {
     }
   });
 
+  const animComplete = () => {
+    if (++restResponse === gameConstants.numberOfCards) {
+      if (!gameActive) {
+        setGameToggleLabel("End Game");
+        setTimerActive(true);
+        setTimer(gameConstants.gameLength)
+        setMisses([]);
+        setGameToggleActive(true)
+        setGameActive(true);
+      } else {
+        setGameActive(false);
+        setGameToggleLabel("Start");
+        setGameToggleActive(true)
+      }
+    }
+  }
+
   const cardTransition = useTransition(cards, {
     from: { opacity: 0, scale: 0 },
     enter: item => async (next) => {
-      await next({opacity: 1, scale: 1, delay: item.delay })
+      await next({ opacity: 1, scale: 1, delay: item.delay })
     },
     leave: { opacity: 0, scale: 0 },
-    config: {mass: 5, tension: 400, friction: 75},
-    onRest: () => console.log('rested')
+    config: { mass: 5, tension: 400, friction: 75 },
+    onRest: animComplete
   });
 
   const toggleGame = () => {
-    let gameBool = activeGame;
-    let timerBool = timerActive;
-
-    if (!gameBool) {
-      setActiveGame(!gameBool)
+    if (!gameActive) {
+      setGameToggleActive(false)
       dealGame();
-      setGameToggleLabel("End Game");
-    } else if (gameBool && timerBool) {
+    } else if (gameActive && timerActive) {
       flipCards();
       setGuess("");
-      setTimerActive(!timerBool);
-      setGameToggleLabel("Random Category");
-    } else if (gameBool && !timerBool) {
+      setTimerActive(false);
+      setGameToggleLabel("New Random Category");
+    } else if (gameActive && !timerActive) {
+      setGameToggleActive(false)
+      setMisses([]);
       setCards([]);
-      setActiveGame(!gameBool);
-      setGameToggleLabel("Start");
     }
   }
 
@@ -67,14 +82,11 @@ export default function App() {
     setCards(_.chain(newCat.answers)
       .shuffle()
       .slice(0, gameConstants.numberOfCards)
-      .map((entry, index) => { return { answer: entry, flipped: false, delay:(index*100)} })
+      .map((entry, index) => { return { answer: entry, flipped: false, delay: (index * 100) } })
       .value()
     );
 
-    setMisses([]);
     setRoundTheme(newCat.theme);
-    setTimer(gameConstants.gameLength)
-    setTimerActive(true);
   }
 
   const typingGuess = e => {
@@ -118,7 +130,9 @@ export default function App() {
   return (
     <div className="App">
 
-      <button onClick={toggleGame} className="game-toggle">{gameToggleLabel}</button>
+      <h1 className="title banner">BURST-OUT!</h1>
+
+      <button onClick={toggleGame} disabled={!gameToggleActive} className="game-toggle">{gameToggleLabel}</button>
 
       <form onSubmit={submitGuess}>
         <input type="text" value={guess} onChange={typingGuess} disabled={!timerActive} />
@@ -126,7 +140,7 @@ export default function App() {
 
       <div className="board-frame">
 
-        <h1>{roundTheme}</h1>
+        <h1 className="banner">{gameActive ? roundTheme : ""}</h1>
 
         <div className="cards-frame">
           {cardTransition((style, item) => {
@@ -134,7 +148,8 @@ export default function App() {
           })}
         </div>
 
-        {timerActive ? <h3>{timer} Seconds Remaining!</h3> : <h3>Time's up!</h3>}
+        
+          <h3 className="banner">{!gameActive ? "": timerActive ? `${timer} Seconds Remaining!` : "Time's up!" }</h3>
 
         <div>
           {_.map(misses, (miss, index) => {
