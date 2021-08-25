@@ -10,14 +10,16 @@ export default function App() {
 
   const [gameActive, setGameActive] = useState(false);
   const [guess, setGuess] = useState("");
-  const [roundTheme, setRoundTheme] = useState("Burst Out");
+  const [roundTheme, setRoundTheme] = useState("Random");
   const [cards, setCards] = useState([]);
   const [misses, setMisses] = useState([]);
 
   const [gameToggleLabel, setGameToggleLabel] = useState("Start");
   const [gameToggleActive, setGameToggleActive] = useState(true);
+  const [themePickerActive, setThemePickerActive] = useState(true);
 
   const [timer, setTimer] = useState(0);
+  const [timerMessage, setTimerMessage] = useState("");
   const [timerActive, setTimerActive] = useState(false);
 
   // Contorls the timer
@@ -28,8 +30,9 @@ export default function App() {
       } else {
         flipCards();
         setTimerActive(false);
+        setTimerMessage("Time's up!")
         setGuess("");
-        setGameToggleLabel("Random Category");
+        setGameToggleLabel("Pick New Category");
       }
     }
   });
@@ -66,15 +69,18 @@ export default function App() {
   // There is one button in the game, what it does changes based on gameActive/timerActive
   const toggleGame = () => {
     if (!gameActive) {
-      setGameToggleActive(false)
+      setGameToggleActive(false);
+      setThemePickerActive(false);
       dealGame();
     } else if (gameActive && timerActive) {
       flipCards();
       setGuess("");
       setTimerActive(false);
-      setGameToggleLabel("New Random Category");
+      setTimerMessage("Time's up!");
+      setGameToggleLabel("Pick New Category");
     } else if (gameActive && !timerActive) {
-      setGameToggleActive(false)
+      setGameToggleActive(false);
+      setThemePickerActive(true);
       setMisses([]);
       setCards([]);
     }
@@ -83,7 +89,9 @@ export default function App() {
   // Sets up the next round. setCards here triggers the cardTransition animation, when it completes
   // the theme is revelead and the timer starts
   const dealGame = () => {
-    let newCat = _.sample(categories);
+    let newCat = {};
+     
+    roundTheme === "Random" ? newCat = _.sample(categories) : newCat = _.find(categories, {theme: roundTheme})
 
     setCards(_.chain(newCat.answers)
       .shuffle()
@@ -93,6 +101,9 @@ export default function App() {
     );
 
     setRoundTheme(newCat.theme);
+  }
+  const handleThemeChoice = (e) => {
+    setRoundTheme(e.target.value);
   }
 
   const typingGuess = e => {
@@ -114,6 +125,7 @@ export default function App() {
 
     if (foundMatch) {
       setCards(tempCards);
+      checkWin();
     } else {
       let missCopy = _.clone(misses);
       missCopy.push(guess);
@@ -121,6 +133,15 @@ export default function App() {
     }
 
     setGuess("");
+  }
+
+  const checkWin = () => {
+    let unFlipped = _.filter(cards, { flipped: false });
+
+    if (!unFlipped[0]) {
+      setTimerActive(false);
+      setTimerMessage("You Win!");
+    }
   }
 
   const flipCards = () => {
@@ -138,6 +159,17 @@ export default function App() {
 
       <h1 className="title banner">BURST-OUT!</h1>
 
+      <div className="theme-picker">
+        <select onChange={handleThemeChoice} disabled={!themePickerActive}>
+            <option value='Random'>Random</option>
+          {_.map(categories, cat => {
+            return (
+              <option value={cat.theme}>{cat.theme}</option>
+            );
+          })}
+        </select>
+      </div>
+
       <button onClick={toggleGame} disabled={!gameToggleActive} className="game-toggle">{gameToggleLabel}</button>
 
       <form onSubmit={submitGuess}>
@@ -154,8 +186,8 @@ export default function App() {
           })}
         </div>
 
-        
-          <h3 className="banner">{!gameActive ? "": timerActive ? `${timer} Seconds Remaining!` : "Time's up!" }</h3>
+
+        <h3 className="banner">{!gameActive ? "" : timerActive ? `${timer} Seconds Remaining!` : `${timerMessage}`}</h3>
 
         <div>
           {_.map(misses, (miss, index) => {

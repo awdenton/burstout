@@ -17,7 +17,7 @@ input:focus {
 }
 
 .game-toggle {
-  margin-bottom: 15px;
+  margin: 15px 0px;
   padding: 5px;
   width: 15%;
   min-width: 100px;
