@@ -17,12 +17,13 @@ input:focus {
 }
 
 .game-toggle {
-  margin: 15px;
+  margin-bottom: 15px;
   padding: 5px;
-  width: 12%;
+  width: 15%;
   min-width: 100px;
   border-radius: 5px;
   box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
 }
 
 .card-anim {
@@ -34,6 +35,7 @@ input:focus {
 
 .game-card {
   border: 2px solid black;
+  border-radius: 10px;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
@@ -54,6 +56,8 @@ input:focus {
 
 .game-card-front, .game-card-back {
   position: absolute;
+  border-radius: 8px;
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
   width: 100%;
   height: 100%;
   -webkit-backface-visibility: hidden;

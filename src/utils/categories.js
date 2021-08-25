@@ -114,6 +114,35 @@ const categories = [
             "Phillips CD-i",
             "ColecoVision",
         ]
+    },
+    {
+        theme: "Programming Languages",
+        answers: [
+            "C",
+            "C++",
+            "C#",
+            "Java",
+            "JavaScript",
+            "Python",
+            "Ruby",
+            "COBOL",
+            "Fortran",
+            "Go!",
+            "Bash",
+            "Erlang",
+            "Elixir",
+            "R",
+            "Haskell",
+            "Kotlin",
+            "Lisp",
+            "Lua",
+            "Pascal",
+            "PHP",
+            "Perl",
+            "RPG",
+            "Ada",
+            "SQL",
+        ]
     }
 ]
 

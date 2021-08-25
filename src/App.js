@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTransition, animated } from 'react-spring';
 import _ from 'lodash';
 import './App.css';
-import { Board, AnswerCard } from './components';
+import { AnswerCard } from './components';
 import { categories, gameConstants } from './utils';
 
 export default function App() {
@@ -20,6 +20,7 @@ export default function App() {
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
 
+  // Contorls the timer
   useEffect(() => {
     if (timerActive) {
       if (timer > 0) {
@@ -33,6 +34,7 @@ export default function App() {
     }
   });
 
+  // When all cards finish animating, take action based on gameActive
   const animComplete = () => {
     if (++restResponse === gameConstants.numberOfCards) {
       if (!gameActive) {
@@ -50,6 +52,7 @@ export default function App() {
     }
   }
 
+  // React-Spring Transition to make cards pop in/out
   const cardTransition = useTransition(cards, {
     from: { opacity: 0, scale: 0 },
     enter: item => async (next) => {
@@ -60,6 +63,7 @@ export default function App() {
     onRest: animComplete
   });
 
+  // There is one button in the game, what it does changes based on gameActive/timerActive
   const toggleGame = () => {
     if (!gameActive) {
       setGameToggleActive(false)
@@ -76,6 +80,8 @@ export default function App() {
     }
   }
 
+  // Sets up the next round. setCards here triggers the cardTransition animation, when it completes
+  // the theme is revelead and the timer starts
   const dealGame = () => {
     let newCat = _.sample(categories);
 
