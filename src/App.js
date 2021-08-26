@@ -18,8 +18,8 @@ export default function App() {
   const [gameToggleActive, setGameToggleActive] = useState(true);
   const [themePickerActive, setThemePickerActive] = useState(true);
 
-  const [timer, setTimer] = useState(0);
-  const [timerMessage, setTimerMessage] = useState(`${gameConstants.gameLength} Seconds Remaining!`);
+  const [timer, setTimer] = useState(gameConstants.gameLength);
+  const [timerMessage, setTimerMessage] = useState('');
   const [timerActive, setTimerActive] = useState(false);
 
   // Contorls the timer
@@ -28,9 +28,9 @@ export default function App() {
       if (timer > 0) {
         setTimeout(() => setTimer(timer - 1), 1000)
       } else {
-        flipCards();
-        setTimerActive(false);
         setTimerMessage("Time's Up!")
+        setTimerActive(false);
+        flipCards();
         setGuess("");
         setGameToggleLabel("Pick New Category");
       }
@@ -41,9 +41,8 @@ export default function App() {
   const animComplete = () => {
     if (++restResponse === gameConstants.numberOfCards) {
       if (!gameActive) {
-        setGameToggleLabel("End Game");
         setTimerActive(true);
-        // setTimer(gameConstants.gameLength)
+        setGameToggleLabel("End Game");
         setMisses([]);
         setGameToggleActive(true)
         setGameActive(true);
@@ -72,13 +71,20 @@ export default function App() {
     leave: { opacity: 0, scale: 0 },
   });
 
+  const missTransition = useTransition(misses, {
+    from: { opacity: 0, scale: 10, transform: `rotate3d(0, 1, 1, 360deg)` },
+    enter: { opacity: 1, scale: 1, transform: `rotate3d(0, 0, 0, 0deg)` },
+    leave: { opacity: 0, scale: 0 },
+    config: { mass: 2, tension: 300, friction: 30 }
+  });
+
   // There is one button in the game, what it does changes based on gameActive/timerActive
   const toggleGame = () => {
     if (!gameActive) {
       setGameToggleActive(false);
       setThemePickerActive(false);
       setTimer(gameConstants.gameLength)
-      setTimerMessage(`${gameConstants.gameLength} Seconds Remaining!`)
+      setTimerMessage(`Get Ready!`)
       dealGame();
     } else if (gameActive && timerActive) {
       flipCards();
@@ -136,8 +142,9 @@ export default function App() {
       setCards(tempCards);
       checkWin();
     } else {
-      let missCopy = _.clone(misses);
+      let missCopy = _.slice(misses);
       missCopy.push(guess);
+      console.log(missCopy);
       setMisses(missCopy);
     }
 
@@ -174,9 +181,9 @@ export default function App() {
       <div className="theme-picker">
         <select onChange={handleThemeChoice} disabled={!themePickerActive}>
           <option value='Random'>Random</option>
-          {_.map(categories, cat => {
+          {_.map(categories, (cat, index) => {
             return (
-              <option value={cat.theme}>{cat.theme}</option>
+              <option value={cat.theme} key={index}>{cat.theme}</option>
             );
           })}
         </select>
@@ -205,6 +212,8 @@ export default function App() {
           })}
         </div>
 
+
+        {/* <Timer timer={timer} active={timerActive} message={timerMessage} isVisible={!themePickerActive} onFinish={() => {}} */}
         <div className="banner">
           {bannerTransition((style, item) => {
             return item ? <animated.div style={style}>{timerActive ? `${timer} Seconds Remaining!` : `${timerMessage}`}</animated.div> : ""
@@ -212,10 +221,9 @@ export default function App() {
         </div>
 
         <div className="misses">
-          {_.map(misses, (miss, index) => {
-            return (
-              <div className="missed-word" key={index}>{miss}</div>
-            );
+
+          {missTransition((style, item) => {
+            return item ? <animated.div style={style} className="missed-word">{item}</animated.div> : ""
           })}
         </div>
 

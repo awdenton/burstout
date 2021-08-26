@@ -113,11 +113,15 @@ input:focus {
   background-size: cover;
 }
 
+.misses {
+  height: 5em;
+}
+
 .missed-word {
   display: inline-block;
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: bold;
   color: #e00000;
   text-transform: uppercase;
-  margin: 2px 5px;
+  margin: 2px 15px;
 }
