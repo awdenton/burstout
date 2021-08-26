@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTransition, animated } from 'react-spring';
 import _ from 'lodash';
-import './App.css';
+import './App.scss';
 import { AnswerCard } from './components';
 import { categories, gameConstants } from './utils';
 
@@ -19,7 +19,7 @@ export default function App() {
   const [themePickerActive, setThemePickerActive] = useState(true);
 
   const [timer, setTimer] = useState(0);
-  const [timerMessage, setTimerMessage] = useState("");
+  const [timerMessage, setTimerMessage] = useState(`${gameConstants.gameLength} Seconds Remaining!`);
   const [timerActive, setTimerActive] = useState(false);
 
   // Contorls the timer
@@ -30,7 +30,7 @@ export default function App() {
       } else {
         flipCards();
         setTimerActive(false);
-        setTimerMessage("Time's up!")
+        setTimerMessage("Time's Up!")
         setGuess("");
         setGameToggleLabel("Pick New Category");
       }
@@ -43,7 +43,7 @@ export default function App() {
       if (!gameActive) {
         setGameToggleLabel("End Game");
         setTimerActive(true);
-        setTimer(gameConstants.gameLength)
+        // setTimer(gameConstants.gameLength)
         setMisses([]);
         setGameToggleActive(true)
         setGameActive(true);
@@ -66,11 +66,19 @@ export default function App() {
     onRest: animComplete
   });
 
+  const bannerTransition = useTransition(!themePickerActive, {
+    from: { opacity: 0, scale: 0 },
+    enter: { opacity: 1, scale: 1 },
+    leave: { opacity: 0, scale: 0 },
+  });
+
   // There is one button in the game, what it does changes based on gameActive/timerActive
   const toggleGame = () => {
     if (!gameActive) {
       setGameToggleActive(false);
       setThemePickerActive(false);
+      setTimer(gameConstants.gameLength)
+      setTimerMessage(`${gameConstants.gameLength} Seconds Remaining!`)
       dealGame();
     } else if (gameActive && timerActive) {
       flipCards();
@@ -90,13 +98,13 @@ export default function App() {
   // the theme is revelead and the timer starts
   const dealGame = () => {
     let newCat = {};
-     
-    roundTheme === "Random" ? newCat = _.sample(categories) : newCat = _.find(categories, {theme: roundTheme})
+
+    roundTheme === "Random" ? newCat = _.sample(categories) : newCat = _.find(categories, { theme: roundTheme })
 
     setCards(_.chain(newCat.answers)
       .shuffle()
       .slice(0, gameConstants.numberOfCards)
-      .map((entry, index) => { return { answer: entry, flipped: false, delay: (index * 100) } })
+      .map((entry, index) => { return { answer: entry, flipped: false, found: false, delay: (index * 100) } })
       .value()
     );
 
@@ -120,6 +128,7 @@ export default function App() {
       if (tempCards[i].answer.toLowerCase() === guess.toLowerCase()) {
         foundMatch = true;
         tempCards[i].flipped = true;
+        tempCards[i].found = true;
       }
     }
 
@@ -154,14 +163,17 @@ export default function App() {
     setCards(tempCards);
   }
 
+
   return (
     <div className="App">
 
-      <h1 className="title banner">BURST-OUT!</h1>
+
+      <div className="title banner">BURST-OUT!</div>
+
 
       <div className="theme-picker">
         <select onChange={handleThemeChoice} disabled={!themePickerActive}>
-            <option value='Random'>Random</option>
+          <option value='Random'>Random</option>
           {_.map(categories, cat => {
             return (
               <option value={cat.theme}>{cat.theme}</option>
@@ -170,15 +182,22 @@ export default function App() {
         </select>
       </div>
 
-      <button onClick={toggleGame} disabled={!gameToggleActive} className="game-toggle">{gameToggleLabel}</button>
+      <div className="game-toggle">
+        <button onClick={toggleGame} disabled={!gameToggleActive} >{gameToggleLabel}</button>
+      </div>
 
       <form onSubmit={submitGuess}>
         <input type="text" value={guess} onChange={typingGuess} disabled={!timerActive} />
       </form>
 
+
       <div className="board-frame">
 
-        <h1 className="banner">{gameActive ? roundTheme : ""}</h1>
+        <div className="banner">
+          {bannerTransition((style, item) => {
+            return item ? <animated.div style={style}>{roundTheme}</animated.div> : ""
+          })}
+        </div>
 
         <div className="cards-frame">
           {cardTransition((style, item) => {
@@ -186,18 +205,22 @@ export default function App() {
           })}
         </div>
 
+        <div className="banner">
+          {bannerTransition((style, item) => {
+            return item ? <animated.div style={style}>{timerActive ? `${timer} Seconds Remaining!` : `${timerMessage}`}</animated.div> : ""
+          })}
+        </div>
 
-        <h3 className="banner">{!gameActive ? "" : timerActive ? `${timer} Seconds Remaining!` : `${timerMessage}`}</h3>
-
-        <div>
+        <div className="misses">
           {_.map(misses, (miss, index) => {
             return (
-              <span className="missed-word" key={index}>{miss}</span>
+              <div className="missed-word" key={index}>{miss}</div>
             );
           })}
         </div>
 
       </div>
+
 
     </div>
   );

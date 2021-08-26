@@ -1,5 +1,5 @@
 const gameConstants = {
-    gameLength: 90,
+    gameLength: 15,
     numberOfCards: 15,
 };
 

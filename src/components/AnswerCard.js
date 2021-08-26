@@ -11,7 +11,7 @@ export default function AnswerCard(props) {
 
     return (
         <animated.div className={`game-card`} style={flipAnimation}>
-            <div className={`game-card-front`}>{props.cardInfo.answer}</div>
+            <div className={`game-card-front ${props.cardInfo.found ? "" : "not-found"}`}>{props.cardInfo.answer}</div>
             <div className={`game-card-back`}></div>
         </animated.div>
     );
