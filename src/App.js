@@ -75,6 +75,7 @@ export default function App() {
     from: { opacity: 0, scale: 10, transform: `rotate3d(0, 1, 1, 360deg)` },
     enter: { opacity: 1, scale: 1, transform: `rotate3d(0, 0, 0, 0deg)` },
     leave: { opacity: 0, scale: 0 },
+    keys: misses.map((item,index) => index),
     config: { mass: 2, tension: 300, friction: 30 }
   });
 
