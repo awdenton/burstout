@@ -138,7 +138,6 @@ export default function App() {
     } else {
       let missCopy = _.slice(misses);
       missCopy.push(guess);
-      console.log(missCopy);
       setMisses(missCopy);
     }
     
