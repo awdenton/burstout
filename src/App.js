@@ -117,20 +117,13 @@ export default function App() {
 
     setRoundTheme(newCat.theme);
   }
-  const handleThemeChoice = (e) => {
-    setRoundTheme(e.target.value);
-  }
-
-  const typingGuess = e => {
-    setGuess(e.target.value);
-  }
-
+  
   const submitGuess = e => {
     e.preventDefault();
-
+    
     let foundMatch = false;
     let tempCards = _.clone(cards);
-
+    
     for (let i = 0; i < tempCards.length; i++) {
       if (tempCards[i].answer.toLowerCase() === guess.toLowerCase()) {
         foundMatch = true;
@@ -138,7 +131,7 @@ export default function App() {
         tempCards[i].found = true;
       }
     }
-
+    
     if (foundMatch) {
       setCards(tempCards);
       checkWin();
@@ -148,30 +141,38 @@ export default function App() {
       console.log(missCopy);
       setMisses(missCopy);
     }
-
+    
     setGuess("");
   }
-
+  
   const checkWin = () => {
     let unFlipped = _.filter(cards, { flipped: false });
-
+    
     if (!unFlipped[0]) {
       setTimerActive(false);
       setTimerMessage("You Win!");
     }
   }
-
+  
   const flipCards = () => {
     let tempCards = _.clone(cards);
-
+    
     _.forEach(tempCards, card => {
       card.flipped = true;
     });
-
+    
     setCards(tempCards);
   }
-
-
+  
+    const handleThemeChoice = (e) => {
+      setRoundTheme(e.target.value);
+    }
+  
+    const typingGuess = e => {
+      setGuess(e.target.value);
+    }
+  
+  
   return (
     <div className="App">
 

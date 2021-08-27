@@ -148,6 +148,7 @@ const categories = [
 
 export default categories;
 
+// Blank template for adding new cats
 // {
 //     theme: "",
 //     answers: [
